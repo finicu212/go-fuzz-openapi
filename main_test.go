@@ -1,4 +1,4 @@
-package go_fuzz_openapi
+package main
 
 import (
 	"golang.org/x/example/stringutil"

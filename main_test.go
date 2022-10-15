@@ -11,10 +11,10 @@ func Reverse(s string) string {
 }
 
 func FuzzReverse(f *testing.F) {
-	testcases := []string{"Hello, world", " ", "!12345"}
-	for _, tc := range testcases {
-		f.Add(tc)
-	}
+	//testcases := []string{"Hello, world", " ", "!12345"}
+	//for _, tc := range testcases {
+	f.Add("Hello")
+	//}
 	f.Fuzz(func(t *testing.T, s string) {
 		r := Reverse(s)
 		rr := Reverse(r)

@@ -8,11 +8,8 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "fuzzctl",
-	Short: "fuzzctl is a black-box API fuzz test generator",
-	Long: `A fuzz test generator, which aims to generate 
-				gofuzz tests based on an API swagger file./`,
-	Run: func(cmd *cobra.Command, args []string) {
-	},
+	Short: "fuzzctl - generate API fuzz tests",
+	Long:  `fuzzctl is a black-box API fuzz test generator which aims to generate gofuzz tests based on an API swagger file.`,
 }
 
 func Execute() {

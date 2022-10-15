@@ -39,24 +39,9 @@ var generateCmd = &cobra.Command{
 	},
 }
 
-type PFlagFunc func(name string, shorthand string, value string, usage string) *string
-
-func decoratePFlagFuncs(f PFlagFunc) PFlagFunc {
-	return func(name string, shorthand string, value string, usage string) *string {
-		fmt.Println("[decorate] before")
-		ret := f(name, shorthand, value, usage)
-		fmt.Println("[decorate] after")
-		return ret
-	}
-}
-
-var (
-	ex = decoratePFlagFuncs(generateCmd.Flags().StringP)
-)
-
 func init() {
 	rootCmd.AddCommand(generateCmd)
-	decoratePFlagFuncs(generateCmd.Flags().StringP)(flagUrl, "u", "https://petstore3.swagger.io/api/v3/", "Specify an URL to target")
+	generateCmd.Flags().StringP(flagUrl, "u", "https://petstore3.swagger.io/api/v3/", "Specify an URL to target")
 	generateCmd.Flags().StringP(flagSpec, "s", "openapi.json", "The swagger/openapi spec file of the API")
 	generateCmd.Flags().StringP(flagOutput, "o", "output", "The output directory in which to generate the fuzz tests")
 

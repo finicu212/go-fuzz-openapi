@@ -1,0 +1,25 @@
+package out
+
+import (
+	"golang.org/x/example/stringutil"
+	"testing"
+	"unicode/utf8"
+)
+
+func Reverse(s string) string {
+	return stringutil.Reverse(s)
+}
+
+func Fuzz{{.Name}}(f *testing.F) {
+    f.Add("Hello")
+    f.Fuzz(func(t *testing.T, s string) {
+        r := Reverse(s)
+        rr := Reverse(r)
+        if s != rr {
+            t.Errorf("Before: %q, after: %q", s, rr)
+        }
+        if utf8.ValidString(s) && !utf8.ValidString(r) {
+            t.Errorf("Reverse produced invalid UTF-8 string %q", r)
+        }
+    })
+}

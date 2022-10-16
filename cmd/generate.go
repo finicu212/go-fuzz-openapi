@@ -76,7 +76,7 @@ func init() {
 	rootCmd.AddCommand(generateCmd)
 	generateCmd.Flags().StringP(flagUrl, "u", "https://petstore3.swagger.io/api/v3/", "Specify an URL to target")
 	generateCmd.Flags().StringP(flagSpec, "s", "openapi.json", "The swagger/openapi spec file of the API")
-	generateCmd.Flags().StringP(flagOutput, "o", "output", "The output directory in which to generate the fuzz tests")
+	generateCmd.Flags().StringP(flagOutput, "o", "out", "The output directory in which to generate the fuzz tests")
 
 	if err := generateCmd.MarkFlagFilename(flagSpec); err != nil {
 		return

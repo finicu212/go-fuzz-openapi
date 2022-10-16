@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
@@ -16,8 +15,36 @@ const (
 
 type testData struct {
 	example     interface{}
-	operationId string
+	operationId string        // updatePetWithForm
+	params      []interface{} // ID, Name, Status
 }
+
+/*
+ * Path processing:
+ * paths -> [
+ *   - pet-put:
+ * 	   - operationId: "updatePet": Use in fuzz test name
+ *     - requestBody.content.(json/xml).schema: Use valid request content
+ *     - responses: [200, 400, 404, 405]
+ *       - response.200.content.(json/xml).schema: Get valid updated content
+ *	   - security (relevant?)
+ * ]
+ *
+ * Schema processing
+ * 	 create struct for each object.
+ *   map json primitives to golang primitives
+ * s := range components.schemas -> [
+ *   - Pet: {
+ *     - s.type: object => create struct
+ *       p := range properties -> [
+ *       - p.type == "array": can be primitive, non-primitive in p.items.type
+ *       - p.type == $ref:
+ *       ]
+ *
+ *   }
+ *
+ * ]
+ */
 
 // URL: https://petstore3.swagger.io/api/v3/pet
 // Swagger: https://petstore.swagger.io/v2/swagger.json
@@ -39,35 +66,6 @@ var generateCmd = &cobra.Command{
 		err = doc.Validate(context.TODO())
 		if err != nil {
 			return err
-		}
-
-		//fmt.Printf("Schemas:\n\n")
-		//for _, schema := range doc.Components.Schemas {
-		//	schema.
-		//	props := schema.Value.Properties
-		//	//json, _ := json.Marshal(props)
-		//	//fmt.Printf("\t%s\n", string(json))
-		//	for _, p := range props {
-		//		fmt.Printf("\t%+v\n", p)
-		//	}
-		//
-		//}
-
-		for _, path := range doc.Paths {
-			fmt.Printf("Debugging %s", path.Description)
-			fmt.Printf("Path: %+v\n", path)
-			for _, op := range path.Operations() {
-				fmt.Printf("\tDebugging %s\n", op.OperationID)
-				fmt.Printf("\tOperation: %+v\n", op)
-				fmt.Printf("\tParams:\n")
-				for _, param := range op.Parameters {
-					json, _ := json.Marshal(param)
-					fmt.Printf("\t\t- %s\n", json)
-				}
-				fmt.Println()
-
-			}
-			fmt.Println()
 		}
 
 		return nil

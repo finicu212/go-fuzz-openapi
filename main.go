@@ -1,8 +1,10 @@
 package main
 
-import "go_fuzz_openapi/templates"
+import (
+	"go_fuzz_openapi/cmd"
+)
 
 func main() {
-	//cmd.Execute()
-	templates.Execute()
+	cmd.Execute()
+	//templates.Execute()
 }

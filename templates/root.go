@@ -1,12 +1,14 @@
 package templates
 
 import (
+	"net/http"
 	"os"
 	"text/template"
 )
 
 type config struct {
-	Name string
+	name       string
+	httpMethod string
 }
 
 func Execute() {
@@ -18,7 +20,10 @@ func Execute() {
 	f, err := os.Create("root_test.go")
 	defer f.Close()
 
-	cfg := config{Name: "Reverse"}
+	cfg := config{
+		name:       "Reverse",
+		httpMethod: http.MethodGet,
+	}
 
 	err = t.Execute(f, cfg)
 	if err != nil {

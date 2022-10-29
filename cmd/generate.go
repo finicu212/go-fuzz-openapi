@@ -63,6 +63,26 @@ var generateCmd = &cobra.Command{
 			return err
 		}
 
+		for sName, sRef := range doc.Components.Schemas {
+			s := sRef.Value
+			json, err := sRef.MarshalJSON()
+			if err != nil {
+				return err
+			}
+			fmt.Printf("%s :: %s\n", sName, json)
+			for pName, pRef := range s.Properties {
+				p := pRef.Value
+				json, err := p.MarshalJSON()
+				if err != nil {
+					return err
+				}
+
+				fmt.Printf("\t:: %s\n", json)
+				fmt.Printf("\t%s %s\n", pName, p.Type)
+			}
+			fmt.Printf("\n")
+		}
+
 		err = doc.Validate(context.TODO())
 		if err != nil {
 			return err

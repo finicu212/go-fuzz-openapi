@@ -1,4 +1,4 @@
-package schemas
+package codegen
 
 import (
 	"github.com/getkin/kin-openapi/openapi3"

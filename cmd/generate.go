@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
-	"go_fuzz_openapi/pkg/schemas"
+	"go_fuzz_openapi/pkg/codegen"
 	"go_fuzz_openapi/pkg/utils"
 	"os"
 )
@@ -91,7 +91,7 @@ var generateCmd = &cobra.Command{
 				return err
 			}
 			fmt.Printf("%s :: %s\n", sName, json)
-			err = schemas.EmbedStruct(sName, s, f)
+			err = codegen.EmbedStruct(sName, s, f)
 			if err != nil {
 				return err
 			}

@@ -1,4 +1,5 @@
+
 type {{.Name}} struct {
     {{range .Properties}}{{.Name}} {{.Type}}
-    {{else}} {{end}}
+    {{end}}
 }

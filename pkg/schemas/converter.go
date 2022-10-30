@@ -2,20 +2,32 @@ package schemas
 
 import (
 	"github.com/getkin/kin-openapi/openapi3"
-	"os"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+	"io"
+	"strings"
 	"text/template"
 )
 
-func convertType(jsonType string) string {
-	switch jsonType {
+func asTitle(s string) string {
+	return cases.Title(language.English, cases.Compact).String(s)
+}
+
+func getTypeFromRef(ref string) string {
+	paths := strings.Split(ref, "/")
+	return paths[len(paths)-1]
+}
+
+func convertType(s *openapi3.SchemaRef) string {
+	switch s.Value.Type {
 	case "string":
 		return "string"
 	case "integer":
 		return "int32"
 	case "array":
-		return "interface{} //TODO: Handle arrays"
+		return "[]" + convertType(s.Value.Items)
 	case "object":
-		return "interface{} //TODO: Handle objects"
+		return asTitle(getTypeFromRef(s.Ref))
 	default:
 		return "interface{} //TODO: Handle others"
 	}
@@ -31,22 +43,22 @@ type PropertyTemplateData struct {
 	Type string
 }
 
-func EmbedStruct(name string, s *openapi3.Schema) (string, error) {
+func EmbedStruct(name string, s *openapi3.Schema, output io.Writer) error {
 	data := SchemaTemplateData{Name: name, Properties: nil}
+
 	for pName, pRef := range s.Properties {
-		p := pRef.Value
-		property := PropertyTemplateData{Name: pName, Type: p.Type}
+		property := PropertyTemplateData{Name: asTitle(pName), Type: convertType(pRef)}
 		data.Properties = append(data.Properties, property)
 	}
 
 	t, err := template.ParseFiles("pkg/templates/schemas.template")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	err = t.Execute(os.Stdout, data)
+	err = t.Execute(output, data)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	return "done", nil
+	return nil
 }

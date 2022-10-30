@@ -6,6 +6,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
 	"go_fuzz_openapi/pkg/schemas"
+	"go_fuzz_openapi/pkg/utils"
 )
 
 const (
@@ -64,6 +65,13 @@ var generateCmd = &cobra.Command{
 			return err
 		}
 
+		f, err := utils.GetTestFileInstance("main_test.go")()
+		if err != nil {
+			return err
+		}
+
+		fmt.Fprintf(f, "package main\n")
+
 		for sName, sRef := range doc.Components.Schemas {
 			s := sRef.Value
 			json, err := sRef.MarshalJSON()
@@ -71,7 +79,7 @@ var generateCmd = &cobra.Command{
 				return err
 			}
 			fmt.Printf("%s :: %s\n", sName, json)
-			_, err = schemas.EmbedStruct(sName, s)
+			err = schemas.EmbedStruct(sName, s, f)
 			if err != nil {
 				return err
 			}

@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/getkin/kin-openapi v0.105.0
 	github.com/spf13/cobra v1.6.0
-	golang.org/x/example v0.0.0-20220412213650-2e68773dfca0
+	golang.org/x/text v0.3.3
 )
 
 require (

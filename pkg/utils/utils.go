@@ -14,7 +14,7 @@ func GetTestFileInstance(name string) (f func() (*os.File, error)) {
 		_, err := os.Stat(name)
 		if err == nil {
 			// file exists, but singleton not initialized. Possibly dirty file?  TODO: Cleanup before / throw error / currently: return as is?
-			file, err = os.Open(name)
+			file, err = os.OpenFile(name, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 			if err != nil {
 				return nil, err
 			}

@@ -65,17 +65,13 @@ func oaSchemaRefToPrimitive(s *openapi3.SchemaRef) string {
 }
 
 func SchemaToStruct(name string, s *openapi3.Schema) SchemaTemplateData {
-	data := SchemaTemplateData{
-		Name:       name,
-		Properties: nil,
+	return SchemaTemplateData{
+		Name: name,
+		Properties: Map(s.Properties, func(s string, v *openapi3.SchemaRef) PropertyTemplateData {
+			return PropertyTemplateData{
+				Name: asTitle(s),
+				Type: oaSchemaRefToPrimitive(v),
+			}
+		}),
 	}
-
-	for pName, pRef := range s.Properties {
-		data.Properties = append(data.Properties, PropertyTemplateData{
-			Name: asTitle(pName),
-			Type: oaSchemaRefToPrimitive(pRef),
-		})
-	}
-
-	return data
 }

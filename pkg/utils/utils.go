@@ -44,3 +44,14 @@ func GetTestFileInstance(name string) (f func() (*os.File, error)) {
 	}
 	return f
 }
+
+// Map modifies each pair of a map[k]v using the provided function, and returns the modified slice
+//
+// Reference: https://gist.github.com/finicu212/8b95436426b3336981a9d82d0cab2d94
+func Map[M interface{ ~map[Key]Value }, Key comparable, Value any, ReturnType any](s M, f func(Key, Value) ReturnType) []ReturnType {
+	sm := make([]ReturnType, len(s))
+	for i, v := range s {
+		sm = append(sm, f(i, v))
+	}
+	return sm
+}

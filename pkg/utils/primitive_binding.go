@@ -19,6 +19,9 @@ type PropertyTemplateData struct {
 	Type string
 }
 
+// Exports names. (first letter of the keyword as capital letter)
+// 1. Allows access outside output package,
+// 2. Avoids collision with builtin keywords (i.e. `type`)
 func asTitle(s string) string {
 	return cases.Title(language.English, cases.Compact).String(s)
 }
@@ -29,14 +32,31 @@ func refPathToType(ref string) string {
 	return filepath.Base(ref)
 }
 
-func convertType(s *openapi3.SchemaRef) string {
+func oaSchemaFormatToPrimitive(format string) string {
+	switch format {
+	case "uint8":
+	case "uint16":
+	case "uint32":
+	case "uint64":
+	case "int8":
+	case "int16":
+	case "int32":
+	case "int64":
+	case "int":
+		return format
+	default:
+	}
+	return "int32"
+}
+
+func oaSchemaRefToPrimitive(s *openapi3.SchemaRef) string {
 	switch s.Value.Type {
 	case "string":
 		return "string"
 	case "integer":
-		return "int32"
+		return oaSchemaFormatToPrimitive(s.Value.Format) // int subtypes
 	case "array":
-		return "[]" + convertType(s.Value.Items)
+		return "[]" + oaSchemaRefToPrimitive(s.Value.Items)
 	case "object":
 		return asTitle(refPathToType(s.Ref))
 	default:
@@ -52,8 +72,8 @@ func SchemaToStruct(name string, s *openapi3.Schema) SchemaTemplateData {
 
 	for pName, pRef := range s.Properties {
 		data.Properties = append(data.Properties, PropertyTemplateData{
-			Name: pName,
-			Type: convertType(pRef),
+			Name: asTitle(pName),
+			Type: oaSchemaRefToPrimitive(pRef),
 		})
 	}
 

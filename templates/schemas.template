@@ -1,5 +1,8 @@
+package main
 
-type {{.Name}} struct {
+{{range .}}type {{.Name}} struct {
     {{range .Properties}}{{.Name}} {{.Type}}
     {{end}}
 }
+
+{{end}}

@@ -5,7 +5,7 @@ import (
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"io"
-	"strings"
+	"path/filepath"
 	"text/template"
 )
 
@@ -14,8 +14,9 @@ func asTitle(s string) string {
 }
 
 func getTypeFromRef(ref string) string {
-	paths := strings.Split(ref, "/")
-	return paths[len(paths)-1]
+	//paths := strings.Split(ref, "/")
+	//return paths[len(paths)-1]
+	return filepath.Base(ref)
 }
 
 func convertType(s *openapi3.SchemaRef) string {

@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"go_fuzz_openapi/pkg/schemas"
 	"go_fuzz_openapi/pkg/utils"
+	"os"
 )
 
 const (
@@ -65,12 +66,23 @@ var generateCmd = &cobra.Command{
 			return err
 		}
 
-		f, err := utils.GetTestFileInstance("main_test.go")()
+		f, err := utils.GetTestFileInstance(out + "/main_test.go")()
 		if err != nil {
 			return err
 		}
 
-		fmt.Fprintf(f, "package main\n")
+		// Defer closure of file
+		defer func(f *os.File) {
+			err := f.Close()
+			if err != nil {
+				panic(err)
+			}
+		}(f)
+
+		_, err = fmt.Fprintf(f, "package main\n")
+		if err != nil {
+			return err
+		}
 
 		for sName, sRef := range doc.Components.Schemas {
 			s := sRef.Value

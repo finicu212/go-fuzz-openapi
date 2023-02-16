@@ -78,21 +78,12 @@ var generateCmd = &cobra.Command{
 			}
 		}(f)
 
-		var schemasAsStructs []codegen.SchemaTemplateData
-		for sName, sRef := range doc.Components.Schemas {
-			s := sRef.Value
-			json, err := sRef.MarshalJSON()
-			if err != nil {
-				return err
-			}
-			fmt.Printf("%s :: %s\n", sName, json)
-			schemasAsStructs = append(schemasAsStructs, codegen.SchemaToStruct(sName, s))
-			if err != nil {
-				return err
-			}
-			fmt.Printf("\n")
+		schemasAsStructs, err := codegen.SchemasToStructs(doc.Components.Schemas)
+		if err != nil {
+			return err
 		}
-		code, err := codegen.EmbedStruct(schemasAsStructs)
+
+		code, err := codegen.Generate(schemasAsStructs)
 		if err != nil {
 			return err
 		}

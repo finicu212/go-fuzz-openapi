@@ -1,0 +1,25 @@
+
+func Fuzz_%s(f *testing.F) {
+    client := &http.Client{}
+    req, err := http.NewRequest("%s", "http://localhost:8080%s", nil)
+    if err != nil {
+        return
+    }
+    %s
+    resp, err := client.Do(req)
+    if err != nil {
+        return
+    }
+    defer resp.Body.Close()
+    %s
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return
+    }
+    if len(body) == 0 {
+        return
+    }
+    if err := json.Unmarshal(body, &respBody); err != nil {
+        return
+    }
+}

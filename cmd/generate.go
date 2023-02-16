@@ -16,12 +16,6 @@ const (
 	flagOutput = "output"
 )
 
-type testData struct {
-	example     interface{}
-	operationId string        // updatePetWithForm
-	params      []interface{} // ID, Name, Status
-}
-
 /*
  * Path processing:
  * paths -> [
@@ -66,6 +60,11 @@ var generateCmd = &cobra.Command{
 			return err
 		}
 
+		err = doc.Validate(context.Background())
+		if err != nil {
+			return err
+		}
+
 		f, err := utils.GetTestFileInstance(out + "/main_test.go")()
 		if err != nil {
 			return err
@@ -79,23 +78,21 @@ var generateCmd = &cobra.Command{
 			}
 		}(f)
 
-		var schemasAsStructs []utils.SchemaTemplateData
-		for sName, sRef := range doc.Components.Schemas {
-			s := sRef.Value
-			json, err := sRef.MarshalJSON()
-			if err != nil {
-				return err
-			}
-			fmt.Printf("%s :: %s\n", sName, json)
-			schemasAsStructs = append(schemasAsStructs, utils.SchemaToStruct(sName, s))
-			if err != nil {
-				return err
-			}
-			fmt.Printf("\n")
+		schemasAsStructs, err := codegen.SchemasToStructs(doc.Components.Schemas)
+		if err != nil {
+			return err
 		}
-		err = codegen.EmbedStruct(schemasAsStructs, f)
 
-		err = doc.Validate(context.TODO())
+		code, err := codegen.Generate(schemasAsStructs)
+		if err != nil {
+			return err
+		}
+
+		_, err = f.Write(code)
+		if err != nil {
+			return err
+		}
+
 		if err != nil {
 			return err
 		}

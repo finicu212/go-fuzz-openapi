@@ -1,14 +1,17 @@
 package utils
 
 import (
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"os"
 	"path/filepath"
 )
 
 // GetTestFileInstance handles output file via a singleton file pointer.
-//   If file pointer not nil, return it. Otherwise:
-//    -> If file exists, clean it up. Otherwise:
-//     -> create file and all directories leading up to it.
+//
+//	If file pointer not nil, return it. Otherwise:
+//	 -> If file exists, clean it up. Otherwise:
+//	  -> create file and all directories leading up to it.
 //
 // Needs to be run once invoked, as is a closure: GetTestFileInstance("main_test.go")()
 func GetTestFileInstance(name string) (f func() (*os.File, error)) {
@@ -43,6 +46,20 @@ func GetTestFileInstance(name string) (f func() (*os.File, error)) {
 		return file, nil
 	}
 	return f
+}
+
+// AsTitle exports names. (first letter of the keyword as capital letter)
+// 1. Allows access outside output package,
+// 2. Avoids collision with builtin keywords (i.e. `type`)
+func AsTitle(s string) string {
+	return cases.Title(language.English, cases.Compact).String(s)
+}
+
+// RefPathToType converts `#/components/schemas/Category` to `Category`
+func RefPathToType(ref string) string {
+	//paths := strings.Split(ref, "/")
+	//return paths[len(paths)-1]
+	return filepath.Base(ref)
 }
 
 // Map modifies each pair of a map[k]v using the provided function, and returns the modified slice

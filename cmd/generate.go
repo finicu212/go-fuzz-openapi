@@ -16,12 +16,6 @@ const (
 	flagOutput = "output"
 )
 
-type testData struct {
-	example     interface{}
-	operationId string        // updatePetWithForm
-	params      []interface{} // ID, Name, Status
-}
-
 /*
  * Path processing:
  * paths -> [
@@ -66,6 +60,11 @@ var generateCmd = &cobra.Command{
 			return err
 		}
 
+		err = doc.Validate(context.Background())
+		if err != nil {
+			return err
+		}
+
 		f, err := utils.GetTestFileInstance(out + "/main_test.go")()
 		if err != nil {
 			return err
@@ -93,9 +92,16 @@ var generateCmd = &cobra.Command{
 			}
 			fmt.Printf("\n")
 		}
-		err = codegen.EmbedStruct(schemasAsStructs, f)
+		code, err := codegen.EmbedStruct(schemasAsStructs)
+		if err != nil {
+			return err
+		}
 
-		err = doc.Validate(context.TODO())
+		_, err = f.Write(code)
+		if err != nil {
+			return err
+		}
+
 		if err != nil {
 			return err
 		}

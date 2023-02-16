@@ -1,26 +1,32 @@
 package codegen
 
 import (
+	"bytes"
+	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
+	"go/format"
 	"go_fuzz_openapi/pkg/utils"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
-	"io"
-	"path/filepath"
 	"text/template"
 )
 
-func EmbedStruct(schemas []SchemaTemplateData, output io.Writer) error {
+func EmbedStruct(schemas []SchemaTemplateData) ([]byte, error) {
 	t, err := template.ParseFiles("templates/schemas.template")
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("failed parsing schemas template: %w", err)
 	}
 
-	err = t.Execute(output, schemas)
+	var buf bytes.Buffer
+	err = t.Execute(&buf, schemas)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("failed executing schemas template: %w", err)
 	}
-	return nil
+
+	formattedCode, err := format.Source(buf.Bytes())
+	if err != nil {
+		return nil, fmt.Errorf("failed to format generated code: %w", err)
+	}
+
+	return formattedCode, nil
 }
 
 func SchemaToStruct(name string, s *openapi3.Schema) SchemaTemplateData {
@@ -28,7 +34,7 @@ func SchemaToStruct(name string, s *openapi3.Schema) SchemaTemplateData {
 		Name: name,
 		Properties: utils.Map(s.Properties, func(s string, v *openapi3.SchemaRef) PropertyTemplateData {
 			return PropertyTemplateData{
-				Name: asTitle(s),
+				Name: utils.AsTitle(s),
 				Type: oaSchemaRefToPrimitive(v),
 			}
 		}),
@@ -45,19 +51,6 @@ type SchemaTemplateData struct {
 type PropertyTemplateData struct {
 	Name string
 	Type string
-}
-
-// Exports names. (first letter of the keyword as capital letter)
-// 1. Allows access outside output package,
-// 2. Avoids collision with builtin keywords (i.e. `type`)
-func asTitle(s string) string {
-	return cases.Title(language.English, cases.Compact).String(s)
-}
-
-func refPathToType(ref string) string {
-	//paths := strings.Split(ref, "/")
-	//return paths[len(paths)-1]
-	return filepath.Base(ref)
 }
 
 func oaSchemaFormatToPrimitive(format string) string {
@@ -86,7 +79,7 @@ func oaSchemaRefToPrimitive(s *openapi3.SchemaRef) string {
 	case "array":
 		return "[]" + oaSchemaRefToPrimitive(s.Value.Items)
 	case "object":
-		return asTitle(refPathToType(s.Ref))
+		return utils.AsTitle(utils.RefPathToType(s.Ref))
 	default:
 		return "interface{} //TODO: Handle others"
 	}

@@ -79,7 +79,7 @@ var generateCmd = &cobra.Command{
 			}
 		}(f)
 
-		var schemasAsStructs []utils.SchemaTemplateData
+		var schemasAsStructs []codegen.SchemaTemplateData
 		for sName, sRef := range doc.Components.Schemas {
 			s := sRef.Value
 			json, err := sRef.MarshalJSON()
@@ -87,7 +87,7 @@ var generateCmd = &cobra.Command{
 				return err
 			}
 			fmt.Printf("%s :: %s\n", sName, json)
-			schemasAsStructs = append(schemasAsStructs, utils.SchemaToStruct(sName, s))
+			schemasAsStructs = append(schemasAsStructs, codegen.SchemaToStruct(sName, s))
 			if err != nil {
 				return err
 			}

@@ -1,3 +1,9 @@
+# github.com/AdaLogics/go-fuzz-headers v0.0.0-20230106234847-43070de90fa1
+## explicit; go 1.18
+github.com/AdaLogics/go-fuzz-headers
+# github.com/cyphar/filepath-securejoin v0.2.3
+## explicit; go 1.13
+github.com/cyphar/filepath-securejoin
 # github.com/getkin/kin-openapi v0.114.0
 ## explicit; go 1.16
 github.com/getkin/kin-openapi/openapi3

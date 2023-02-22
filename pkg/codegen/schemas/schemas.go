@@ -1,35 +1,38 @@
-package codegen
+package schemas
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
-	"go/format"
 	"go_fuzz_openapi/pkg/utils"
+	"io"
 	"text/template"
 )
 
-func Generate(schemas []SchemaTemplateData) ([]byte, error) {
+func Generate(wr io.Writer, schemas []SchemaTemplateData) error {
 	t, err := template.ParseFiles("templates/schemas.template")
 	if err != nil {
-		return nil, fmt.Errorf("failed parsing schemas template: %w", err)
+		return fmt.Errorf("failed parsing schemas template: %w", err)
 	}
 
-	var buf bytes.Buffer
-	err = t.Execute(&buf, schemas)
+	err = t.Execute(wr, schemas)
 	if err != nil {
-		return nil, fmt.Errorf("failed executing schemas template: %w", err)
+		return fmt.Errorf("failed executing schemas template: %w", err)
 	}
 
-	formattedCode, err := format.Source(buf.Bytes())
-	if err != nil {
-		return nil, fmt.Errorf("failed to format generated code: %w", err)
-	}
-
-	return formattedCode, nil
+	return nil
 }
 
-func SchemasToStructs(ss openapi3.Schemas) ([]SchemaTemplateData, error) {
+// SchemaTemplateData contains the templating data necessary to generate the corresponding struct for each schema
+type SchemaTemplateData struct {
+	Name       string
+	Properties []PropertyTemplateData
+}
+type PropertyTemplateData struct {
+	Name string
+	Type string
+}
+
+func ExtractSchemasTemplateData(ss openapi3.Schemas) ([]SchemaTemplateData, error) {
 	var schemasAsStructs = make([]SchemaTemplateData, 0)
 	for sName, sRef := range ss {
 		s := sRef.Value
@@ -38,7 +41,7 @@ func SchemasToStructs(ss openapi3.Schemas) ([]SchemaTemplateData, error) {
 			return nil, fmt.Errorf("schema %s is not valid json: %w", sName, err)
 		}
 		fmt.Printf("%s :: %s\n", sName, json)
-		schemasAsStructs = append(schemasAsStructs, schemaToStruct(sName, s))
+		schemasAsStructs = append(schemasAsStructs, extractSchemaTemplateData(sName, s))
 		if err != nil {
 			return nil, fmt.Errorf("failed appending schema to struct slice: %w", err)
 		}
@@ -47,7 +50,7 @@ func SchemasToStructs(ss openapi3.Schemas) ([]SchemaTemplateData, error) {
 	return schemasAsStructs, nil
 }
 
-func schemaToStruct(name string, s *openapi3.Schema) SchemaTemplateData {
+func extractSchemaTemplateData(name string, s *openapi3.Schema) SchemaTemplateData {
 	return SchemaTemplateData{
 		Name: name,
 		Properties: utils.Map(s.Properties, func(s string, v *openapi3.SchemaRef) PropertyTemplateData {
@@ -57,18 +60,6 @@ func schemaToStruct(name string, s *openapi3.Schema) SchemaTemplateData {
 			}
 		}),
 	}
-}
-
-// SchemaTemplateData contains the templating data necessary to generate the corresponding struct for each schema
-type SchemaTemplateData struct {
-	Name       string
-	Properties []PropertyTemplateData
-}
-
-// PropertyTemplateData contains the templating data necessary to generate the corresponding primitive for each property of the schema
-type PropertyTemplateData struct {
-	Name string
-	Type string
 }
 
 func oaSchemaFormatToPrimitive(format string) string {

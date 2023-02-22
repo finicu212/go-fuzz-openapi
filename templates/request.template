@@ -16,8 +16,12 @@ func encodeAndSend(v any, method, endpoint string) (*http.Response, error) {
 	return client.Do(req)
 }
 
-{{range $path, $item := .Paths}}
-{{range $method, $op := $item.Operations}}
-// {{ $op }} : {{ $method }} : {{ $path }} : {{ $item }}
-{{end}}
-{{end}}
+{{ range $pi, $pathItem := .PathTemplateData }}
+{{ range $oi, $opItem := $pathItem.OperationTemplateData }}
+// {{$opItem.Name}} {{$pathItem.Name}}
+func Fuzz_{{$opItem.OpId}}_OnlyRequired(f *testing.F) {
+    f.Skip()
+    {{if $opItem.RequestBody }}// Request Body: {{$opItem.RequestBody}}{{end}}
+    {{if $opItem.ResponseBody }}// Response Body: {{$opItem.ResponseBody}}{{end}}
+}{{ end }}
+{{ end }}

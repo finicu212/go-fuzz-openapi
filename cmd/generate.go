@@ -78,7 +78,7 @@ var generateCmd = &cobra.Command{
 			}
 		}(f)
 
-		code, err := codegen.Generate(doc.Components.Schemas, doc.Paths)
+		code, err := codegen.Generate(url, doc.Components.Schemas, doc.Paths)
 		if err != nil {
 			return err
 		}

@@ -9,7 +9,7 @@ import (
 	"go_fuzz_openapi/pkg/codegen/schemas"
 )
 
-func Generate(ss openapi3.Schemas, ps openapi3.Paths) ([]byte, error) {
+func Generate(url string, ss openapi3.Schemas, ps openapi3.Paths) ([]byte, error) {
 	schemasTemplateData, err := schemas.ExtractSchemasTemplateData(ss)
 	if err != nil {
 		return nil, fmt.Errorf("failed generating schema template data: %w", err)
@@ -21,7 +21,7 @@ func Generate(ss openapi3.Schemas, ps openapi3.Paths) ([]byte, error) {
 		return nil, fmt.Errorf("failed generating schema code: %w", err)
 	}
 
-	routesTemplateData, err := routes.ExtractPathsTemplateData(ps)
+	routesTemplateData, err := routes.ExtractPathsTemplateData(url, ps)
 	if err != nil {
 		return nil, fmt.Errorf("failed generating paths template data: %w", err)
 	}
@@ -30,7 +30,8 @@ func Generate(ss openapi3.Schemas, ps openapi3.Paths) ([]byte, error) {
 		return nil, err
 	}
 
-	formattedCode, err := format.Source(buf.Bytes())
+	formattedCode := buf.Bytes()
+	formattedCode, err = format.Source(buf.Bytes())
 	if err != nil {
 		return nil, fmt.Errorf("failed to format generated code: %w", err)
 	}

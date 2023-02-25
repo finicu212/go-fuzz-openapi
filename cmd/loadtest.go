@@ -36,7 +36,7 @@ It is mandatory that the proxy APIs provided should forward the request to the t
 			delayRFC, _ := cmd.Flags().GetString(flagAttackAtTimeStamp)
 
 			if delayRFC != "" {
-				t, err := time.Parse(time.RFC3339, delayRFC)
+				t, err := time.Parse("15:04:05Z", delayRFC)
 				if err != nil {
 					return fmt.Errorf("could not parse %s as RFC3339 format: %w", delayRFC, err)
 				}

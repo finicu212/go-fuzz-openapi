@@ -4,13 +4,12 @@ go 1.20
 
 require (
 	github.com/getkin/kin-openapi v0.114.0
+	github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866
 	github.com/spf13/cobra v1.6.1
 	golang.org/x/text v0.7.0
 )
 
 require (
-	github.com/AdaLogics/go-fuzz-headers v0.0.0-20230106234847-43070de90fa1 // indirect
-	github.com/cyphar/filepath-securejoin v0.2.3 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect

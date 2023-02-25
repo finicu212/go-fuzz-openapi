@@ -10,12 +10,6 @@ import (
 	"os"
 )
 
-const (
-	flagSpec   = "spec"
-	flagUrl    = "url"
-	flagOutput = "output"
-)
-
 /*
  * Path processing:
  * paths -> [
@@ -46,12 +40,13 @@ const (
 // URL: https://petstore3.swagger.io/api/v3/pet
 // Swagger: https://petstore.swagger.io/v2/swagger.json
 var generateCmd = &cobra.Command{
-	Use:   fmt.Sprintf("generate --%s <file> --%s <url>", flagSpec, flagUrl),
+	Use: fmt.Sprintf("generate --%s <file> --%s <url>", flagSpec, flagUrl),
+	//Use:   "generate",
 	Short: `Generate the fuzz tests`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		url, _ := cmd.Flags().GetString(flagUrl)
-		swagger, _ := cmd.Flags().GetString(flagSpec)
-		out, _ := cmd.Flags().GetString(flagOutput)
+		url, _ := cmd.PersistentFlags().GetString(flagUrl)
+		swagger, _ := cmd.PersistentFlags().GetString(flagSpec)
+		out, _ := cmd.PersistentFlags().GetString(flagOutput)
 		fmt.Printf("Running generate with %s, %s, %s\n", url, out, swagger)
 
 		loader := openapi3.NewLoader()
@@ -88,24 +83,12 @@ var generateCmd = &cobra.Command{
 			return err
 		}
 
-		if err != nil {
-			return err
-		}
-
 		return nil
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(generateCmd)
-	generateCmd.Flags().StringP(flagUrl, "u", "https://petstore3.swagger.io/api/v3/", "Specify an URL to target")
-	generateCmd.Flags().StringP(flagSpec, "s", "openapi.yaml", "The swagger/openapi spec file of the API")
 	generateCmd.Flags().StringP(flagOutput, "o", "out", "The output directory in which to generate the fuzz tests")
 
-	if err := generateCmd.MarkFlagFilename(flagSpec); err != nil {
-		return
-	}
-	if err := generateCmd.MarkFlagDirname(flagOutput); err != nil {
-		return
-	}
 }

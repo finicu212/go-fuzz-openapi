@@ -1,0 +1,22 @@
+{
+  "name": "proxy-api",
+  "version": "1.0.0",
+  "description": "Forward requests with a delay\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[Dto a certain API with a delay",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/finicu212/go-fuzz-openapi/tools/proxy-api"
+  },
+  "keywords": [
+    "proxy"
+  ],
+  "dependencies": {
+    "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6"
+  },
+  "author": "Virtopeanu Alexandru (finicu)",
+  "license": "Apache-2.0"
+}

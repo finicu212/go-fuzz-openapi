@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"go_fuzz_openapi/pkg/loadmaker"
 	"time"
 )
 
@@ -25,16 +26,32 @@ It is mandatory that the proxy APIs provided should forward the request to the t
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		delay, _ := cmd.Flags().GetDuration(flagAttackAtDuration)
+		delayRFC, _ := cmd.Flags().GetString(flagAttackAtTimeStamp)
+
+		if delayRFC != "" {
+			t, err := time.Parse(time.RFC3339, delayRFC)
+			if err != nil {
+				return fmt.Errorf("could not parse %s as RFC3339 format: %w", delayRFC, err)
+			}
+			delay = time.Until(t)
+		}
+
 		url, _ := cmd.Flags().GetString(flagUrl)
 		swagger, _ := cmd.Flags().GetString(flagSpec)
+
+		proxies, _ := cmd.Flags().GetStringSlice(flagProxies)
+		endpoint, _ := cmd.Flags().GetString(flagEndpoint)
+		operation, _ := cmd.Flags().GetString(flagOperation)
+
+		loadmaker.ProxyCoordinator{}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(loadTestCmd)
 
-	fifteenSecs, _ := time.ParseDuration("15s")
-	loadTestCmd.Flags().DurationP(flagAttackAtDuration, "d", fifteenSecs, "The time that the requests will all be sent at, as a duration from now. e.g 20s for twenty seconds")
+	loadTestCmd.Flags().DurationP(flagAttackAtDuration, "d", 3*time.Second, "The time that approximately all the requests will be sent at, as a duration from now. e.g 20s for twenty seconds")
 	loadTestCmd.Flags().StringP(flagAttackAtTimeStamp, "", "", "The time that the requests will all be sent at in RFC3339 format, e.g 11:19:04Z")
 	loadTestCmd.Flags().StringSliceP(flagProxies, "p", []string{"localhost:3000"}, "Slice of strings containing the URL or IP on which to reach the Proxies")
 	loadTestCmd.Flags().StringP(flagEndpoint, "e", "pet", "The endpoint to forward all the requests to")

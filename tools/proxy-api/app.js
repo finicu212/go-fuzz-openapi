@@ -9,7 +9,7 @@ const myProxy = createProxyMiddleware({
 });
 
 const proxyDelay = function (req, res, next) {
-  const delay = req.query.delay;
+  const delay = req.headers["x-proxy-delay"];
   if (delay) {
     const delayTime = parseDelayTime(delay);
 

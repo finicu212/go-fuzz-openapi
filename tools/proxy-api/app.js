@@ -28,6 +28,8 @@ function parseDelayTime(delay) {
   const unit = delay.slice(-1).toLowerCase();
   const time = parseInt(delay.slice(0, -1));
   switch (unit) {
+    case 'i':
+      return time;
     case 's':
       return time * 1000;
     case 'm':

@@ -12,36 +12,13 @@ const (
 	DelayHeaderParam = "x-proxy-delay"
 )
 
-type ProxyCoordinator struct {
-	LoadMakers []*LoadMaker
-	TargetTime time.Time
-	Client     http.Client
-}
-
+// LoadMaker acts as a thread, which continuously sends Request at ProxyUrl/Endpoint asynchronously.
 type LoadMaker struct {
-	ProxyUrl string // with port if IP
-	Endpoint string
-	Request  *http.Request
-}
-
-func NewProxyCoordinator(d time.Duration, opts ...ProxyCoordinatorOption) *ProxyCoordinator {
-	pc := &ProxyCoordinator{
-		LoadMakers: nil,
-		TargetTime: time.Now().Add(d),
-		Client:     http.Client{}, // Default client unless otherwise specified via WithClient option
-	}
-	for _, opt := range opts {
-		opt(pc)
-	}
-	return pc
-}
-
-type ProxyCoordinatorOption func(pc *ProxyCoordinator)
-
-func WithClient(client http.Client) ProxyCoordinatorOption {
-	return func(pc *ProxyCoordinator) {
-		pc.Client = client
-	}
+	UID        string
+	ProxyUrl   string // with port if IP
+	Endpoint   string
+	Request    *http.Request
+	TargetTime time.Time
 }
 
 func (pc *ProxyCoordinator) AddLoadMaker(proxyUrl string, endpoint string, method string, body any) (*ProxyCoordinator, error) {
@@ -54,12 +31,22 @@ func (pc *ProxyCoordinator) AddLoadMaker(proxyUrl string, endpoint string, metho
 	if err != nil {
 		return nil, fmt.Errorf("failed creating http request for proxy %s: %w", proxyUrl, err)
 	}
-	req.Header.Set(DelayHeaderParam, fmt.Sprintf("%di", pc.TargetTime.Sub(time.Now()).Milliseconds()))
 	lm := &LoadMaker{
-		ProxyUrl: proxyUrl,
-		Endpoint: endpoint,
-		Request:  req,
+		ProxyUrl:   proxyUrl,
+		Endpoint:   endpoint,
+		Request:    req,
+		TargetTime: pc.TargetTime,
 	}
 	pc.LoadMakers = append(pc.LoadMakers, lm)
 	return pc, nil
+}
+
+func (lm *LoadMaker) Start(client *http.Client) {
+	for lm.TargetTime.After(time.Now()) {
+		lm.Request.Header.Set(DelayHeaderParam, fmt.Sprintf("%di", lm.TargetTime.Sub(time.Now()).Milliseconds()))
+		_, err := client.Do(lm.Request)
+		if err != nil {
+			fmt.Printf("Failed with request: %+v\n", *lm.Request)
+		}
+	}
 }

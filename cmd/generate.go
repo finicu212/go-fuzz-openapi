@@ -44,9 +44,9 @@ var generateCmd = &cobra.Command{
 	//Use:   "generate",
 	Short: `Generate the fuzz tests`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		url, _ := cmd.PersistentFlags().GetString(flagUrl)
-		swagger, _ := cmd.PersistentFlags().GetString(flagSpec)
-		out, _ := cmd.PersistentFlags().GetString(flagOutput)
+		url, _ := cmd.Flags().GetString(flagUrl)
+		swagger, _ := cmd.Flags().GetString(flagSpec)
+		out, _ := cmd.Flags().GetString(flagOutput)
 		fmt.Printf("Running generate with %s, %s, %s\n", url, out, swagger)
 
 		loader := openapi3.NewLoader()

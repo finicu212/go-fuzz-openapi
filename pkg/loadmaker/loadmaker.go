@@ -24,7 +24,7 @@ type LoadMaker struct {
 }
 
 func (pc *ProxyCoordinator) AddLoadMaker(proxyUrl string, endpoint string, method string) (*ProxyCoordinator, error) {
-	var f gen.Pet
+	f := gen.GetStructZeroValueByName("pet")
 	gofakeit.Struct(&f)
 
 	var buf *bytes.Buffer

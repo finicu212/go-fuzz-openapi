@@ -1,5 +1,28 @@
 package gen
 
+// GetStructZeroValueByName returns a zero-value struct for the given name. For example, "pet" returns an empty Pet{} object.
+func GetStructZeroValueByName(name string) interface{} {
+	switch name {
+	case "Pet":
+		return Pet{}
+	case "Tag":
+		return Tag{}
+	case "User":
+		return User{}
+	case "Address":
+		return Address{}
+	case "ApiResponse":
+		return ApiResponse{}
+	case "Category":
+		return Category{}
+	case "Customer":
+		return Customer{}
+	case "Order":
+		return Order{}
+	}
+	return nil
+}
+
 type Order struct {
 	Petid    int32
 	Quantity int32

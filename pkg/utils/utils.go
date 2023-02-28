@@ -5,6 +5,7 @@ import (
 	"golang.org/x/text/language"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // GetTestFileInstance handles output file via a singleton file pointer.
@@ -57,14 +58,17 @@ func AsTitle(s string) string {
 
 // RefPathToType converts `#/components/schemas/Category` to `Category`
 func RefPathToType(ref string) string {
-	//paths := strings.Split(ref, "/")
-	//return paths[len(paths)-1]
 	return filepath.Base(ref)
 }
 
+// RefPathToEndpoint converts `/store/order/{pet_id}` to `/store/order`
+func RefPathToEndpoint(ref string) string {
+	paths := strings.Split(ref, "{")
+	return paths[0]
+}
+
 // Map modifies each pair of a map[k]v using the provided function, and returns the modified slice
-//
-// Reference: https://gist.github.com/finicu212/8b95436426b3336981a9d82d0cab2d94
+// (note to self: update gist if any changes to this func https://gist.github.com/finicu212/8b95436426b3336981a9d82d0cab2d94)
 func Map[M interface{ ~map[Key]Value }, Key comparable, Value any, ReturnType any](s M, f func(Key, Value) ReturnType) []ReturnType {
 	sm := make([]ReturnType, len(s))
 	for i, v := range s {

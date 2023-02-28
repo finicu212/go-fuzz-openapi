@@ -78,12 +78,7 @@ var generateCmd = &cobra.Command{
 			}
 		}(f)
 
-		schemasAsStructs, err := codegen.SchemasToStructs(doc.Components.Schemas)
-		if err != nil {
-			return err
-		}
-
-		code, err := codegen.Generate(schemasAsStructs)
+		code, err := codegen.Generate(url, doc.Components.Schemas, doc.Paths)
 		if err != nil {
 			return err
 		}
@@ -113,10 +108,4 @@ func init() {
 	if err := generateCmd.MarkFlagDirname(flagOutput); err != nil {
 		return
 	}
-	//if err := generateCmd.MarkFlagRequired(flagSpec); err != nil {
-	//	return
-	//}
-	//if err := generateCmd.MarkFlagRequired(flagUrl); err != nil {
-	//	return
-	//}
 }

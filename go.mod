@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/getkin/kin-openapi v0.114.0
-	github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866
 	github.com/spf13/cobra v1.6.1
 	golang.org/x/text v0.7.0
 )

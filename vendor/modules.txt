@@ -21,9 +21,6 @@ github.com/josharian/intern
 github.com/mailru/easyjson/buffer
 github.com/mailru/easyjson/jlexer
 github.com/mailru/easyjson/jwriter
-# github.com/mmatczuk/anyflag v0.0.0-20230209112147-9567d4cab866
-## explicit; go 1.19
-github.com/mmatczuk/anyflag
 # github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
 ## explicit
 github.com/mohae/deepcopy

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/mmatczuk/anyflag"
 	"github.com/spf13/cobra"
 	"go_fuzz_openapi/pkg/loadmaker"
 	"go_fuzz_openapi/pkg/xtraflag"
@@ -67,7 +66,7 @@ It is mandatory that the proxy APIs provided should forward the request to the t
 		},
 	}
 
-	cmd.Flags().VarP(anyflag.NewValue(
+	cmd.Flags().VarP(xtraflag.NewValue(
 		map[string][]string{"localhost:3000": {"POST:pet"}},
 		&proxiesToOperation,
 		xtraflag.StringToStringSliceParser(",", "=", "|")),

@@ -2,6 +2,7 @@ package xtraflag
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 )
 
@@ -19,4 +20,34 @@ func StringToStringSliceParser(entriesSep, assignSep, valsSep string) parser {
 		}
 		return out, nil
 	}
+}
+
+type Value[T any] struct {
+	parse func(val string) (T, error)
+	value *T
+}
+
+func NewValue[T any](val T, p *T, parse func(val string) (T, error)) *Value[T] {
+	v := new(Value[T])
+	v.parse = parse
+	v.value = p
+	*v.value = val
+	return v
+}
+
+func (v *Value[T]) Set(val string) error {
+	var err error
+	*v.value, err = v.parse(val)
+	return err
+}
+
+func (v *Value[T]) Type() string {
+	return reflect.TypeOf(v).Name()
+}
+
+func (v *Value[T]) String() string {
+	if v.value == nil || reflect.ValueOf(*v.value).IsZero() {
+		return ""
+	}
+	return fmt.Sprint(*v.value)
 }

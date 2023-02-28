@@ -53,6 +53,6 @@ func oaSchemaRefToPrimitive(s *openapi3.SchemaRef) string {
 	case "object":
 		return utils.AsTitle(utils.RefPathToType(s.Ref))
 	default:
-		return "interface{} // TODO: add this type to oaSchemaRefToPrimitive!"
 	}
+	return "interface{} // TODO: add this type to oaSchemaRefToPrimitive!"
 }

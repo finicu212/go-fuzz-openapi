@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/brianvoe/gofakeit"
+	"go_fuzz_openapi/gen"
 	"net/http"
 	"time"
 )
@@ -21,12 +23,16 @@ type LoadMaker struct {
 	TargetTime time.Time
 }
 
-func (pc *ProxyCoordinator) AddLoadMaker(proxyUrl string, endpoint string, method string, body any) (*ProxyCoordinator, error) {
-	buf := &bytes.Buffer{}
-	err := json.NewEncoder(buf).Encode(body)
+func (pc *ProxyCoordinator) AddLoadMaker(proxyUrl string, endpoint string, method string) (*ProxyCoordinator, error) {
+	var f gen.Pet
+	gofakeit.Struct(&f)
+
+	var buf *bytes.Buffer
+	err := json.NewEncoder(buf).Encode(f)
 	if err != nil {
-		return nil, fmt.Errorf("could not encode %v to json: %w", body, err)
+		return nil, fmt.Errorf("could not encode %+v to json: %w", f, err)
 	}
+
 	req, err := http.NewRequest(method, proxyUrl+"/"+endpoint, buf)
 	if err != nil {
 		return nil, fmt.Errorf("failed creating http request for proxy %s: %w", proxyUrl, err)

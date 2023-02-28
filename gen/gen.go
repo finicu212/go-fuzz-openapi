@@ -5,7 +5,7 @@ type Order struct {
 	Quantity int32
 	Shipdate string
 	Status   string
-	Complete interface{} //TODO: Handle others
+	Complete bool
 	Id       int32
 }
 

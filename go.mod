@@ -3,6 +3,7 @@ module go_fuzz_openapi
 go 1.20
 
 require (
+	github.com/brianvoe/gofakeit v3.18.0+incompatible
 	github.com/getkin/kin-openapi v0.114.0
 	github.com/spf13/cobra v1.6.1
 	golang.org/x/text v0.7.0

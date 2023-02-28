@@ -16,22 +16,20 @@ func Generate(url string, ss openapi3.Schemas, ps openapi3.Paths) ([]byte, error
 	}
 
 	var buf bytes.Buffer
-	err = schemas.Generate(&buf, schemasTemplateData)
-	if err != nil {
+	if err = schemas.Generate(&buf, schemasTemplateData); err != nil {
 		return nil, fmt.Errorf("failed generating schema code: %w", err)
 	}
 
-	routesTemplateData, err := routes.ExtractPathsTemplateData(url, ps)
+	routesData, err := routes.ExtractPathsTemplateData(url, ps)
 	if err != nil {
 		return nil, fmt.Errorf("failed generating paths template data: %w", err)
 	}
-	err = routes.Generate(&buf, routesTemplateData)
-	if err != nil {
+
+	if err = routes.Generate(&buf, routesData); err != nil {
 		return nil, err
 	}
 
-	formattedCode := buf.Bytes()
-	formattedCode, err = format.Source(buf.Bytes())
+	formattedCode, err := format.Source(buf.Bytes())
 	if err != nil {
 		return nil, fmt.Errorf("failed to format generated code: %w", err)
 	}

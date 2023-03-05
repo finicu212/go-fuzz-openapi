@@ -23,17 +23,21 @@ type LoadMaker struct {
 	TargetTime time.Time
 }
 
-func (pc *ProxyCoordinator) AddLoadMaker(proxyUrl string, endpoint string, method string) (*ProxyCoordinator, error) {
-	f := gen.GetStructZeroValueByName("pet")
+func (pc *ProxyCoordinator) AddLoadMaker(proxyUrl string, endpoint string, method string, requestBodyName string) (*ProxyCoordinator, error) {
+	fmt.Printf("AddLoadMaker(%s, %s, %s, %s)\n", proxyUrl, endpoint, method, requestBodyName)
+
+	f := gen.GetStructZeroValueByName(requestBodyName)
 	gofakeit.Struct(&f)
 
-	var buf *bytes.Buffer
-	err := json.NewEncoder(buf).Encode(f)
+	fmt.Printf("Generated %+v\n", f)
+
+	var buf bytes.Buffer
+	err := json.NewEncoder(&buf).Encode(&f)
 	if err != nil {
 		return nil, fmt.Errorf("could not encode %+v to json: %w", f, err)
 	}
 
-	req, err := http.NewRequest(method, proxyUrl+"/"+endpoint, buf)
+	req, err := http.NewRequest(method, proxyUrl+"/"+endpoint, &buf)
 	if err != nil {
 		return nil, fmt.Errorf("failed creating http request for proxy %s: %w", proxyUrl, err)
 	}

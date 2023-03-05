@@ -9,8 +9,8 @@ package main
 
 // GetStructZeroValueByName returns a zero-value struct for the given name. For example, "pet" returns an empty Pet{} object.
 func GetStructZeroValueByName(name string) interface{} {
-    switch name {
-    {{range .}}case "{{.Name}}":
+    switch strings.ToLower(name) {
+    {{range .}}case "{{ .Name | ToLower }}":
         return {{.Name}}{}
     {{end}}
     }

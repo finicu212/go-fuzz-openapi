@@ -5,11 +5,17 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"go_fuzz_openapi/pkg/utils"
 	"io"
+	"strings"
 	"text/template"
 )
 
 func Generate(wr io.Writer, schemas []SchemaTemplateData) error {
-	t, err := template.ParseFiles("templates/schemas.template")
+	fs := template.FuncMap{
+		"ToLower": strings.ToLower,
+	}
+	schTempl := template.New("schemas.template").Funcs(fs)
+
+	t, err := schTempl.ParseFiles("templates/schemas.template")
 	if err != nil {
 		return fmt.Errorf("failed parsing schemas template: %w", err)
 	}

@@ -1,24 +1,27 @@
 package gen
 
+import "strings"
+
 // GetStructZeroValueByName returns a zero-value struct for the given name. For example, "pet" returns an empty Pet{} object.
 func GetStructZeroValueByName(name string) interface{} {
-	switch name {
-	case "Pet":
-		return Pet{}
-	case "Tag":
+	switch strings.ToLower(name) {
+	case "tag":
 		return Tag{}
-	case "User":
+	case "user":
 		return User{}
-	case "Address":
+	case "address":
 		return Address{}
-	case "ApiResponse":
+	case "apiresponse":
 		return ApiResponse{}
-	case "Category":
+	case "category":
 		return Category{}
-	case "Customer":
+	case "customer":
 		return Customer{}
-	case "Order":
+	case "order":
 		return Order{}
+	case "pet":
+		return Pet{}
+
 	}
 	return nil
 }

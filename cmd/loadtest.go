@@ -52,7 +52,7 @@ It is mandatory that the proxy APIs provided should forward the request to the t
 						return fmt.Errorf("%s is not separated by `:` for --%s", flagProxiesToOperation, ops)
 					}
 					var err error
-					proxyMaster, err = proxyMaster.AddLoadMaker(p, endpoint, method)
+					proxyMaster, err = proxyMaster.AddLoadMaker(p, endpoint, method, "Pet")
 					if err != nil {
 						return err
 					}

@@ -55,7 +55,7 @@ func oaSchemaRefToPrimitive(s *openapi3.SchemaRef) string {
 	case "integer":
 		return oaSchemaFormatToPrimitive(s.Value.Format) // int subtypes
 	case "array":
-		return "[]" + oaSchemaRefToPrimitive(s.Value.Items)
+		return "[]" + oaSchemaRefToPrimitive(s.Value.Items) + "`fakesize:\"2\"`" // TODO: fakesize to func
 	case "object":
 		return utils.AsTitle(utils.RefPathToType(s.Ref))
 	default:

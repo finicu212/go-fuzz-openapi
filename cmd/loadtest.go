@@ -58,19 +58,20 @@ It is mandatory that the proxy APIs provided should forward the request to the t
 					}
 				}
 			}
-			_ = proxyMaster
+
+			proxyMaster.Start()
 
 			return nil
 		},
 	}
 
 	cmd.Flags().VarP(xtraflag.NewValue(
-		map[string][]string{"localhost:3000": {"POST:/pet"}},
+		map[string][]string{"http://localhost:3000": {"POST:pet"}},
 		&proxiesToOperation,
 		xtraflag.StringToStringSliceParser(",", "=", "|")),
-		flagProxiesToOperation, "p", "Map a proxy API to one or multiple operations. E.g. localhost:3000=POST:/pet|GET:/pet,localhost:3001=POST:/store|GET:/user/{username}")
+		flagProxiesToOperation, "p", "Map a proxy API to one or multiple operations. E.g. localhost:3000=POST:pet|GET:pet,localhost:3001=POST:store|GET:user/{username}")
 
-	cmd.Flags().DurationP(flagAttackAtDuration, "d", 3*time.Second, "The time that approximately all the requests will be sent at, as a duration from now. e.g 20s for twenty seconds")
+	cmd.Flags().DurationP(flagAttackAtDuration, "d", 200*time.Millisecond, "The time that approximately all the requests will be sent at, as a duration from now. e.g 20s for twenty seconds")
 	cmd.Flags().StringP(flagAttackAtTimeStamp, "", "", "The time that the requests will all be sent at in RFC3339 format, e.g 11:19:04Z")
 	//cmd.Flags().StringP(flagRequestBody, "b", "", "The method to use on the target endpoint, e.g. POST, PUT, GET")
 

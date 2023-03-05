@@ -1,17 +1,41 @@
 package main
 
+import (
+	"github.com/brianvoe/gofakeit"
+	"strings"
+)
+
 {{range .}}type {{.Name}} struct {
     {{range .Properties}}{{.Name}} {{.Type}}
     {{end}}
 }
 
+// Fake{{.Name}} returns a faked struct of {{.Name}} type
+func Fake{{.Name}}() {{.Name}} {
+    var f {{.Name}}
+	gofakeit.Struct(&f)
+    return f
+}
+
 {{end}}
 
-// GetStructZeroValueByName returns a zero-value struct for the given name. For example, "pet" returns an empty Pet{} object.
-func GetStructZeroValueByName(name string) interface{} {
+// GetEmptyStructByName returns a zero-value struct for the given name. For example, "pet" returns an empty Pet{} object.
+func GetEmptyStructByName(name string) interface{} {
     switch strings.ToLower(name) {
     {{range .}}case "{{ .Name | ToLower }}":
         return {{.Name}}{}
+    {{end}}
+    }
+    return nil
+}
+
+// GetFakedStructByName returns a struct filled with faked values for the given name.
+// We can't apply gofakeit by name using this func, since we require type casting from interface{} to the concrete type. We don't know the concrete types ahead of time
+// (i.e. gofakeit(&interface{}) makes no modifications to the empty interface)
+func GetFakedStructByName(name string) interface{} {
+    switch strings.ToLower(name) {
+    {{range .}}case "{{ .Name | ToLower }}":
+        return Fake{{.Name}}()
     {{end}}
     }
     return nil

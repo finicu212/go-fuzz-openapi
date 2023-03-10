@@ -11,6 +11,13 @@ import (
 	"testing"
 )
 
+/*
+ * Automatically generated file...
+ * TODO: Figure out an elegant way to generate this before running `loadtest`.
+ * TODO: i.e. running fuzzctl should also update this file based on the spec
+ *
+ */
+
 func init() {
 }
 

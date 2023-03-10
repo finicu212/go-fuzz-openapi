@@ -18,10 +18,11 @@ const (
 // LoadMaker acts as a thread, which continuously sends Request at ProxyUrl/Endpoint asynchronously until TargetTime.
 // All the requests made will have DelayHeaderParam set such that they all land at approximately TargetTime.
 type LoadMaker struct {
-	UID         string // TODO
-	RequestBody string
-	Request     *http.Request
-	TargetTime  time.Time
+	UID          string
+	RequestBody  string
+	Request      *http.Request
+	TargetTime   time.Time
+	RequestsMade int
 }
 
 func (pc *ProxyCoordinator) AddLoadMaker(proxyUrl string, endpoint string, method string, requestBodyName string) (*ProxyCoordinator, error) {
@@ -32,16 +33,20 @@ func (pc *ProxyCoordinator) AddLoadMaker(proxyUrl string, endpoint string, metho
 		return nil, fmt.Errorf("failed creating http request for proxy %s: %w", proxyUrl, err)
 	}
 	lm := &LoadMaker{
-		UID:         uuid.NewString(),
-		RequestBody: requestBodyName,
-		Request:     req,
-		TargetTime:  pc.TargetTime,
+		UID:          uuid.NewString(),
+		RequestBody:  requestBodyName,
+		Request:      req,
+		TargetTime:   pc.TargetTime,
+		RequestsMade: 0,
 	}
 	pc.LoadMakers = append(pc.LoadMakers, lm)
 	return pc, nil
 }
 
-func (lm *LoadMaker) Start(client *http.Client) {
+// Private run method accessed by Orchestrator entity.
+// run will make requests to the Proxy API with the correct DelayHeaderParam value until TargetTime
+// run keeps track of the number of requests made
+func (lm *LoadMaker) run(client *http.Client) {
 	for lm.TargetTime.After(time.Now()) {
 		lm.Request.Header.Set(DelayHeaderParam, fmt.Sprintf("%di", lm.TargetTime.Sub(time.Now()).Milliseconds()))
 
@@ -57,5 +62,6 @@ func (lm *LoadMaker) Start(client *http.Client) {
 		if err != nil {
 			log.Printf("failed with request: %+v: %s", *lm.Request, err.Error())
 		}
+		lm.RequestsMade += 1
 	}
 }

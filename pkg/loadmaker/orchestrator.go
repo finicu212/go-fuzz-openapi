@@ -32,6 +32,7 @@ func WithClient(client *http.Client) ProxyCoordinatorOption {
 	}
 }
 
+// Start starts the loadmakers. It then waits until all of them have completed and returns
 func (pc *ProxyCoordinator) Start() {
 	var wg sync.WaitGroup
 
@@ -41,9 +42,16 @@ func (pc *ProxyCoordinator) Start() {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			lm.Start(pc.Client)
+			lm.run(pc.Client)
 		}()
 	}
 
 	wg.Wait()
+}
+
+func (pc *ProxyCoordinator) GetRequestsMade() (rs int) {
+	for _, lm := range pc.LoadMakers {
+		rs += lm.RequestsMade
+	}
+	return rs
 }

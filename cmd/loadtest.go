@@ -40,10 +40,6 @@ It is mandatory that the proxy APIs provided should forward the request to the t
 				delay = time.Until(t)
 			}
 
-			//url, _ := cmd.Flags().GetString(flagUrl)
-			//swagger, _ := cmd.Flags().GetString(flagSpec)
-			//body, _ := cmd.Flags().GetString(flagRequestBody)
-
 			proxyMaster := loadmaker.NewProxyCoordinator(delay)
 			for p, ops := range proxiesToOperation {
 				for _, o := range ops {
@@ -61,6 +57,8 @@ It is mandatory that the proxy APIs provided should forward the request to the t
 
 			proxyMaster.Start()
 
+			fmt.Printf("Total requests: %d\n", proxyMaster.GetRequestsMade())
+
 			return nil
 		},
 	}
@@ -73,7 +71,6 @@ It is mandatory that the proxy APIs provided should forward the request to the t
 
 	cmd.Flags().DurationP(flagAttackAtDuration, "d", 200*time.Millisecond, "The time that approximately all the requests will be sent at, as a duration from now. e.g 20s for twenty seconds")
 	cmd.Flags().StringP(flagAttackAtTimeStamp, "", "", "The time that the requests will all be sent at in RFC3339 format, e.g 11:19:04Z")
-	//cmd.Flags().StringP(flagRequestBody, "b", "", "The method to use on the target endpoint, e.g. POST, PUT, GET")
 
 	cmd.Flags().SortFlags = false
 	cmd.SilenceUsage = true

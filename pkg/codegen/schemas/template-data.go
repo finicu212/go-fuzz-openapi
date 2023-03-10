@@ -3,6 +3,7 @@ package schemas
 import (
 	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
+	"go_fuzz_openapi/pkg/functional"
 	"go_fuzz_openapi/pkg/utils"
 )
 
@@ -37,7 +38,7 @@ func ExtractSchemasTemplateData(ss openapi3.Schemas) ([]SchemaTemplateData, erro
 func extractSchemaTemplateData(name string, s *openapi3.Schema) SchemaTemplateData {
 	return SchemaTemplateData{
 		Name: name,
-		Properties: utils.Map(s.Properties, func(s string, v *openapi3.SchemaRef) PropertyTemplateData {
+		Properties: functional.MapMaps(s.Properties, func(s string, v *openapi3.SchemaRef) PropertyTemplateData {
 			return PropertyTemplateData{
 				Name: utils.AsTitle(s),
 				Type: oaSchemaRefToPrimitive(v),

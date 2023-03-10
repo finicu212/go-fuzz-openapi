@@ -3,6 +3,7 @@ package schemas
 import (
 	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
+	"go_fuzz_openapi/pkg/endpoints"
 	"go_fuzz_openapi/pkg/utils"
 	"io"
 	"strings"
@@ -57,7 +58,7 @@ func oaSchemaRefToPrimitive(s *openapi3.SchemaRef) string {
 	case "array":
 		return "[]" + oaSchemaRefToPrimitive(s.Value.Items) + "`fakesize:\"2\"`" // TODO: fakesize to func
 	case "object":
-		return utils.AsTitle(utils.RefPathToType(s.Ref))
+		return utils.AsTitle(endpoints.RefPathToType(s.Ref))
 	default:
 	}
 	return "interface{} // TODO: add this type to oaSchemaRefToPrimitive!"

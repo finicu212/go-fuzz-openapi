@@ -3,7 +3,7 @@ package routes
 import (
 	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
-	"go_fuzz_openapi/pkg/utils"
+	"go_fuzz_openapi/pkg/endpoints"
 	"io"
 	"text/template"
 )
@@ -46,7 +46,7 @@ func ExtractPathsTemplateData(url string, ps openapi3.Paths) (*FuzzTestTemplateD
 }
 
 func extractPathTemplateData(name string, p *openapi3.PathItem) (*PathTemplateData, error) {
-	pthTmplData := &PathTemplateData{Name: utils.RefPathToEndpoint(name)}
+	pthTmplData := &PathTemplateData{Name: endpoints.RefPathToEndpoint(name)}
 	pthTmplData.OperationTemplateData = make([]OperationTemplateData, 0)
 	for opName, op := range p.Operations() {
 		json, err := p.MarshalJSON()
@@ -108,7 +108,7 @@ func tryGetSchemaOfRequestBody(content openapi3.Content) string {
 	for _, mimeType := range attemptedMimeTypesWhitelist {
 		mediaType := content.Get(mimeType)
 		if mediaType != nil {
-			return utils.RefPathToType(mediaType.Schema.Ref)
+			return endpoints.RefPathToType(mediaType.Schema.Ref)
 		}
 	}
 

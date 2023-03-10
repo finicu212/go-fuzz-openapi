@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
 	"go_fuzz_openapi/pkg/endpoints"
@@ -30,8 +31,8 @@ func simpleCmd() *cobra.Command {
 				return err
 			}
 
-			endpoints.FuzzPathParams(doc, "/pet/{petId}")
-			//fmt.Printf("%+v\n", ops)
+			path := endpoints.FuzzPathParams(doc, "/pet/{petId}")
+			fmt.Printf("%+v\n", path)
 
 			return nil
 		},

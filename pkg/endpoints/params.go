@@ -6,6 +6,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"go_fuzz_openapi/pkg/functional"
 	"golang.org/x/exp/maps"
+	"strconv"
 	"strings"
 )
 
@@ -28,9 +29,10 @@ func FuzzPathParams(doc *openapi3.T, path string) string {
 }
 
 func getFakerFuncBySchema(schema *openapi3.SchemaRef) string {
+	gofakeit.Seed(0)
 	switch schema.Value.Type {
 	case "integer":
-		return string(gofakeit.Int32())
+		return strconv.Itoa(int(gofakeit.Uint32()))
 	case "string":
 		return "user1"
 	}

@@ -11,6 +11,9 @@ github.com/go-openapi/jsonpointer
 # github.com/go-openapi/swag v0.22.3
 ## explicit; go 1.18
 github.com/go-openapi/swag
+# github.com/google/uuid v1.3.0
+## explicit
+github.com/google/uuid
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap

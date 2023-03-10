@@ -6,7 +6,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
 	"go_fuzz_openapi/pkg/codegen"
-	"go_fuzz_openapi/pkg/utils"
+	"go_fuzz_openapi/pkg/filemaker"
 	"os"
 )
 
@@ -60,7 +60,7 @@ var generateCmd = &cobra.Command{
 			return err
 		}
 
-		f, err := utils.GetTestFileInstance(out + "/main_test.go")()
+		f, err := filemaker.TryGetElseCreateFile(out + "/main_test.go")()
 		if err != nil {
 			return err
 		}

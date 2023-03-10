@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"go_fuzz_openapi/gen"
 	"log"
 	"net/http"
@@ -14,7 +15,8 @@ const (
 	DelayHeaderParam = "x-proxy-delay"
 )
 
-// LoadMaker acts as a thread, which continuously sends Request at ProxyUrl/Endpoint asynchronously.
+// LoadMaker acts as a thread, which continuously sends Request at ProxyUrl/Endpoint asynchronously until TargetTime.
+// All the requests made will have DelayHeaderParam set such that they all land at approximately TargetTime.
 type LoadMaker struct {
 	UID         string // TODO
 	RequestBody string
@@ -30,6 +32,7 @@ func (pc *ProxyCoordinator) AddLoadMaker(proxyUrl string, endpoint string, metho
 		return nil, fmt.Errorf("failed creating http request for proxy %s: %w", proxyUrl, err)
 	}
 	lm := &LoadMaker{
+		UID:         uuid.NewString(),
 		RequestBody: requestBodyName,
 		Request:     req,
 		TargetTime:  pc.TargetTime,

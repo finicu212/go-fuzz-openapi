@@ -4,7 +4,7 @@ const express = require('express');
 const app = express()
 
 const myProxy = createProxyMiddleware({
-  target: 'https://petstore3.swagger.io/api/v3/',
+  target: 'http://localhost:8080/',
   changeOrigin: true
 });
 

@@ -1,5 +1,5 @@
 build:
-	go build -o fuzzctl
+	go build -o fuzzctl.exe
 
 test:
 	go test
@@ -7,5 +7,8 @@ test:
 fuzz:
 	go test -fuzz Fuzz
 
-host:
+server:
 	cd third_party/swagger-petstore-swagger-petstore-v3-1.0.17 && mvn package jetty:run
+
+proxy:
+	cd tools/proxy-api && npm start

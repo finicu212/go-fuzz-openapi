@@ -6,14 +6,8 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
 	"go_fuzz_openapi/pkg/codegen"
-	"go_fuzz_openapi/pkg/utils"
+	"go_fuzz_openapi/pkg/filemaker"
 	"os"
-)
-
-const (
-	flagSpec   = "spec"
-	flagUrl    = "url"
-	flagOutput = "output"
 )
 
 /*
@@ -46,7 +40,8 @@ const (
 // URL: https://petstore3.swagger.io/api/v3/pet
 // Swagger: https://petstore.swagger.io/v2/swagger.json
 var generateCmd = &cobra.Command{
-	Use:   fmt.Sprintf("generate --%s <file> --%s <url>", flagSpec, flagUrl),
+	Use: fmt.Sprintf("generate --%s <file> --%s <url>", flagSpec, flagUrl),
+	//Use:   "generate",
 	Short: `Generate the fuzz tests`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		url, _ := cmd.Flags().GetString(flagUrl)
@@ -65,7 +60,7 @@ var generateCmd = &cobra.Command{
 			return err
 		}
 
-		f, err := utils.GetTestFileInstance(out + "/main_test.go")()
+		f, err := filemaker.TryGetElseCreateFile(out + "/main_test.go")()
 		if err != nil {
 			return err
 		}
@@ -78,21 +73,12 @@ var generateCmd = &cobra.Command{
 			}
 		}(f)
 
-		schemasAsStructs, err := codegen.SchemasToStructs(doc.Components.Schemas)
-		if err != nil {
-			return err
-		}
-
-		code, err := codegen.Generate(schemasAsStructs)
+		code, err := codegen.Generate(url, doc.Components.Schemas, doc.Paths)
 		if err != nil {
 			return err
 		}
 
 		_, err = f.Write(code)
-		if err != nil {
-			return err
-		}
-
 		if err != nil {
 			return err
 		}
@@ -103,20 +89,6 @@ var generateCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(generateCmd)
-	generateCmd.Flags().StringP(flagUrl, "u", "https://petstore3.swagger.io/api/v3/", "Specify an URL to target")
-	generateCmd.Flags().StringP(flagSpec, "s", "openapi.yaml", "The swagger/openapi spec file of the API")
 	generateCmd.Flags().StringP(flagOutput, "o", "out", "The output directory in which to generate the fuzz tests")
 
-	if err := generateCmd.MarkFlagFilename(flagSpec); err != nil {
-		return
-	}
-	if err := generateCmd.MarkFlagDirname(flagOutput); err != nil {
-		return
-	}
-	//if err := generateCmd.MarkFlagRequired(flagSpec); err != nil {
-	//	return
-	//}
-	//if err := generateCmd.MarkFlagRequired(flagUrl); err != nil {
-	//	return
-	//}
 }
